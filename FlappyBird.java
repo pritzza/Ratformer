@@ -27,9 +27,9 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
 
     public Rectangle rat;
 
-    public int ticks, yMotion, xMotion, score;
+    public double ticks, yMotion, xMotion, score, jumps;
 
-    public int speed = 6;
+    public int speed = 0;
 
     public Random rng;
 
@@ -76,11 +76,10 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
         int height = 100 + rng.nextInt(100);
 
         if (start) {
-            columns.add(new Rectangle(WIDTH + width + columns.size() * 300, HEIGHT - height - 150, width, height));
-            columns.add(new Rectangle(WIDTH + width + (columns.size() - 1) * 300, 0, width, HEIGHT - height - space));
-        } else {
-            columns.add(new Rectangle(columns.get(columns.size() - 1).x + 600, HEIGHT - height - 150, width, height));
-            columns.add(new Rectangle(columns.get(columns.size() - 1).x, 0, width, HEIGHT - height - space));
+            columns.add(new Rectangle(1100, 400, 250, 250));
+            columns.add(new Rectangle(400, 250, 150, 150));
+
+         
         }
     }
 
@@ -93,6 +92,7 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
 
     public void jump() {
 
+        jumps++;
         /*
          * if (gameOver) {
          * 
@@ -117,23 +117,23 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
          * 
          * }
          */
-        yMotion = -13;
+        yMotion = -9;
 
     }
 
     public void runLeft() {
 
-        while (xMotion > -10){
+        while (xMotion > -8){
 
-        xMotion--;
+        xMotion -= 1;
         }
     }
 
     public void runRight() {
 
-        while (xMotion < 10){
+        while (xMotion < 8){
 
-            xMotion++;
+            xMotion += 1;
         }
     }
 
@@ -149,8 +149,11 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
                 column.x -= speed;
             }
 
-            if (ticks % 3 == 0 && yMotion < 15) {
-                yMotion += 1;
+            if (ticks % 3 == 0 && yMotion < 9 ) {
+
+                yMotion += .8;
+
+                
             }
 
             for (int i = 0; i < columns.size(); i++) {
@@ -173,11 +176,18 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
                 yMotion = 0;
             }
 
-            if (xMotion > 10) {
-                xMotion = 10;
+            if (rat.y > 625) {
+                
+                rat.y = 625;
+
+                jumps = 0;
             }
-            if (xMotion < -10) {
-                xMotion = -10;
+
+            if (xMotion > 8) {
+                xMotion = 8;
+            }
+            if (xMotion < -8) {
+                xMotion = -8;
             }
 
             for (Rectangle column : columns) {
@@ -189,40 +199,39 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
                 }
                 if (column.intersects(rat)) {
 
-                    gameOver = true;
+                    if (rat.y - rat.height < column.y && rat.y < column.y) {
 
-                    if (rat.x <= column.x && (rat.y >= column.y && rat.y >= column.height)) {
+                        rat.y = column.y - rat.height;
 
-                        rat.x = column.x - rat.width;
+                        rat.x -= speed;
 
-                    } else if (rat.x <= column.x + column.width && (rat.y >= column.y && rat.y >= column.height)) {
+                        jumps = 0;
 
-                        rat.x = column.x + column.width;
+                    }
+
+                    else if (rat.y < column.y + column.height && rat.y + rat.height > column.y + column.height) {
+
+                        rat.y = column.y + column.height;
+
+                        yMotion = 0;
 
                     } else {
 
-                        if (column.y != 0) {
+                        if (rat.x - rat.width <= column.x) {
 
-                            rat.y = column.y - rat.height;
+                            rat.x = column.x - rat.width;
 
+    
+                        } else if (rat.x <= column.x + column.width) {
+    
+                            rat.x = column.x + column.width;
+
+    
                         }
-                        if (rat.y >= column.y) {
-
-                            if (rat.x <= column.x) {
-
-                                rat.x = column.x - rat.width;
-
-                            } 
-                            
-                            else if (rat.x <= column.x + column.width) {
-
-                                rat.x = column.x + column.width;
-
-                            }
-                        }
-                    }
+                    }  
                 }
             }
+
             /*
              * if (rat.y > HEIGHT - 150 - rat.height || rat.y < -50) {
              * 
@@ -256,9 +265,6 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
         g.setColor(epiGroundColor);
         g.fillRect(0, HEIGHT - 150, WIDTH, 30);
 
-        g.setColor(hypoGroundColor);
-        g.fillRect(0, HEIGHT - 150, WIDTH, 5);
-
         g.setColor(ratColor);
         g.fillRect(rat.x, rat.y, rat.width, rat.height);
 
@@ -274,14 +280,14 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
             g.drawString("Click To Start", WIDTH / 3, HEIGHT / 2 - 50);
         }
         if (gameOver) {
-            g.drawString("You Suck.", WIDTH / 3, HEIGHT / 2 - 50);
+            g.drawString("Hi Tanay", WIDTH / 3, HEIGHT / 2 - 50);
         }
-        // if (!gameOver && started) {
-        // g.drawString(String.valueOf(score), WIDTH / 2 - 10, 100);
-        // }
-        // if (gameOver == true) {
-        // g.drawString(String.valueOf(score), WIDTH / 2 - 10, 100);
-        // }
+         if (!gameOver && started) {
+        g.drawString( "X: " + String.valueOf(rat.x) + " Y: " + (rat.y) , WIDTH / 2 - 10, 100);
+        }
+        if (gameOver == true) {
+        g.drawString( "X: " + String.valueOf(rat.x) + " Y: " + (rat.y) , WIDTH / 2 - 10, 100);
+         }
     }
 
     public static void main(String[] args) {
@@ -302,9 +308,34 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
 
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 
+            if (jumps <= 1) {
+
             jump();
+
+            }
             
 
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_D) {
+
+            runRight();
+
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_A) {
+
+            runLeft();
+
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_S) {
+
+            if (speed != 0) {
+                speed = 0;
+            } else {
+                speed = 5;
+            }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
@@ -324,7 +355,7 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
             if (speed != 0) {
                 speed = 0;
             } else {
-                speed = 20;
+                speed = 5;
             }
         }
     }
@@ -332,16 +363,32 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
 
+        if (e.getKeyCode() == KeyEvent.VK_A) {
+
+            while (xMotion < 0) {
+            xMotion++;
+            }
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_D) {
+
+            while (xMotion > 0) {
+            xMotion--;
+            }
+        }
+
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 
-            xMotion += 10;
-
+            while (xMotion < 0) {
+            xMotion++;
+            }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 
-            xMotion -= 10;
-
+            while (xMotion > 0) {
+            xMotion--;
+            }
         }
 
     }
