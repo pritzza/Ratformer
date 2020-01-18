@@ -19,27 +19,34 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
 
     public static FlappyBird flappyBird;
 
-    public final int WIDTH = 1920, HEIGHT = 800;
+    public final int WIDTH = 1920, HEIGHT = 1080;
 
     public Renderer renderer;
 
-    public ArrayList<Rectangle> columns;
+    public ArrayList<Rectangle> columns, doors;
 
-    public Rectangle rat;
+    public Rectangle player;
 
     public double ticks, yMotion, xMotion, score, jumps;
 
-    public int speed = 0;
+    public int speed, level = 0;
 
     public Random rng;
 
     public boolean gameOver, started;
 
-    Color ratColor = new Color(112, 104, 92);
-    Color backGroundColor = new Color(94, 92, 89);
-    Color epiGroundColor = new Color(44, 39, 33);
-    Color groundColor = new Color(60, 53, 44);
-    Color hypoGroundColor = new Color(32, 32, 32);
+    /*
+     * Color playerColor = new Color(112, 104, 92); Color backGroundColor = new
+     * Color(94, 92, 89); Color epiGroundColor = new Color(44, 39, 33); Color
+     * groundColor = new Color(60, 53, 44); Color hypoGroundColor = new Color(32,
+     * 32, 32);
+     */
+    Color playerColor = new Color(128, 128, 128);
+    Color backGroundColor = new Color(88, 88, 88);
+    Color epiGroundColor = new Color(22, 22, 22);
+    Color groundColor = new Color(32, 32, 32);
+    Color hypoGroundColor = new Color(16, 16, 16);
+    Color doorColor = new Color(255, 250, 250);
 
     public FlappyBird() {
 
@@ -57,30 +64,14 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
         f.setResizable(false);
         f.setVisible(true);
 
-        rat = new Rectangle(WIDTH / 2 - 10, HEIGHT / 2 - 10, 55, 25);
+        player = new Rectangle(WIDTH / 2, 895, 20, 35);
         columns = new ArrayList<Rectangle>();
+        doors = new ArrayList<Rectangle>();
 
-        addColumn(true);
-        addColumn(true);
-        addColumn(true);
-        addColumn(true);
+        createSpawn();
 
         timer.start();
 
-    }
-
-    public void addColumn(boolean start) {
-
-        int space = 450;
-        int width = 300;
-        int height = 100 + rng.nextInt(100);
-
-        if (start) {
-            columns.add(new Rectangle(1100, 400, 250, 250));
-            columns.add(new Rectangle(400, 250, 150, 150));
-
-         
-        }
     }
 
     public void paintColumn(Graphics g, Rectangle column) {
@@ -90,51 +81,85 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
 
     }
 
+    public void paintDoor(Graphics g, Rectangle door) {
+
+        g.setColor(doorColor);
+        g.fillRect(door.x, door.y, door.width, door.height);
+
+    }
+
     public void jump() {
 
         jumps++;
-        /*
-         * if (gameOver) {
-         * 
-         * rat = new Rectangle(WIDTH / 2 - 10, HEIGHT / 2 - 10, 55, 25);
-         * columns.clear(); yMotion = 0; score = 0;
-         * 
-         * addColumn(true); addColumn(true); addColumn(true); addColumn(true);
-         * 
-         * gameOver = false; }
-         */
+
         if (!started) {
 
             started = true;
 
         }
-        /*
-         * else if (!gameOver) {
-         * 
-         * if (yMotion > 0) {
-         * 
-         * yMotion = 0;
-         * 
-         * }
-         */
-        yMotion = -9;
+
+        yMotion = -7;
 
     }
 
     public void runLeft() {
 
-        while (xMotion > -8){
+        while (xMotion > -5) {
 
-        xMotion -= 1;
+            xMotion -= 1;
         }
     }
 
     public void runRight() {
 
-        while (xMotion < 8){
+        while (xMotion < 5) {
 
             xMotion += 1;
         }
+    }
+
+    public void enterDoor() {
+
+            columns.clear();
+            doors.clear();
+
+            player.y = 895;
+            player.x = WIDTH / 2 - (player.width / 2);
+
+        if (level == 1) {
+
+            createLevelOne();
+
+            level = 0;
+
+        } else {
+
+            createSpawn();
+        }
+
+        renderer.repaint();
+
+    }
+
+    public void createSpawn() { 
+
+        columns.add(new Rectangle(1100, 400, 320, 320));
+        columns.add(new Rectangle(400, 250, 150, 150));
+        columns.add(new Rectangle(1600, 790, 128, 32));
+        columns.add(new Rectangle(1636, 520, 32, 128));
+
+        doors.add(new Rectangle(450, 175, 50, 75));
+        doors.add(new Rectangle(640, 855, 50, 75));
+
+    }
+
+    public void createLevelOne() {
+
+        columns.add(new Rectangle(900, 350, 150, 150));
+        columns.add(new Rectangle(300, 650, 100, 100));
+
+        doors.add(new Rectangle((WIDTH / 2 - (player.width / 2)), 855, 50, 75));
+
     }
 
     @Override
@@ -143,113 +168,133 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
         ticks++;
 
         if (started) {
+
             for (int i = 0; i < columns.size(); i++) {
+
                 Rectangle column = columns.get(i);
 
                 column.x -= speed;
             }
 
-            if (ticks % 3 == 0 && yMotion < 9 ) {
+            if (ticks % 4 == 0 && yMotion < 7) {
 
                 yMotion += .8;
 
-                
             }
 
             for (int i = 0; i < columns.size(); i++) {
+
                 Rectangle column = columns.get(i);
 
                 if (column.x + column.width < 0) {
+
                     columns.remove(column);
 
-                    if (column.y == 0) {
-                        addColumn(false);
-                    }
                 }
             }
+            
+            // master physics            
+            player.y += yMotion;
+            player.x += xMotion;
 
-            rat.y += yMotion;
-            rat.x += xMotion;
+            // hit top of jframe
+            if (player.y < 0) {
 
-            if (rat.y < 0) {
-                rat.y = 0;
+                player.y = 0;
                 yMotion = 0;
             }
 
-            if (rat.y > 625) {
-                
-                rat.y = 625;
+            // floor collision
+            if (player.y > 895) {
 
+                player.y = 895;
                 jumps = 0;
+
+            } else {
+
+            // lose one jump when walking of cliff
+                if (jumps == 0) {
+
+                    jumps = 1;
+
+                }
             }
 
-            if (xMotion > 8) {
-                xMotion = 8;
-            }
-            if (xMotion < -8) {
-                xMotion = -8;
+            // prevent infinite acceleplayerion right
+            if (xMotion > 5) {
+
+                xMotion = 5;
+
             }
 
+            // prevent infinite acceleplayerion left
+            if (xMotion < -5) {
+
+                xMotion = -5;
+
+            }
+
+            // i dont know what this does, something with collision and sinking into the floor
+            if (player.y + yMotion >= HEIGHT - 150) {
+
+                player.y = HEIGHT - 150 - player.height;
+
+            }
+
+            // dont walk off screen left
+            if (player.x <= 0) {
+
+                player.x = 0;
+
+            }
+
+            // dont walk off screen right
+            if (player.x >= 1905 - player.width) {
+
+                player.x = 1905 - player.width;
+
+            }
+        }
+
+            // collision
             for (Rectangle column : columns) {
 
-                if (!gameOver && column.y == 0 && rat.x + rat.width / 2 > column.x + column.width / 2
-                        && rat.x + rat.width / 2 < column.x + column.width / 2 + 10) {
+                if (column.intersects(player)) {
 
-                    score++;
-                }
-                if (column.intersects(rat)) {
+                    // if you hit the floor of column
+                    if (player.y - player.height < column.y && player.y < column.y) {
 
-                    if (rat.y - rat.height < column.y && rat.y < column.y) {
+                        player.y = column.y - player.height;
 
-                        rat.y = column.y - rat.height;
-
-                        rat.x -= speed;
+                        player.x -= speed;
 
                         jumps = 0;
 
-                    }
+                    } 
 
-                    else if (rat.y < column.y + column.height && rat.y + rat.height > column.y + column.height) {
+                    // if you hit ceiling of column
+                    else if (player.y < column.y + column.height && player.y + player.height > column.y + column.height) {
 
-                        rat.y = column.y + column.height;
+                        player.y = column.y + column.height;
 
                         yMotion = 0;
 
                     } else {
 
-                        if (rat.x - rat.width <= column.x) {
+                        // hit left of column
+                        if (player.x - player.width <= column.x) {
 
-                            rat.x = column.x - rat.width;
+                            player.x = column.x - player.width;
 
-    
-                        } else if (rat.x <= column.x + column.width) {
-    
-                            rat.x = column.x + column.width;
+                        // hit right of column
+                        } else if (player.x <= column.x + column.width) {
 
-    
+                            player.x = column.x + column.width;
+
                         }
-                    }  
+                    }
                 }
             }
-
-            /*
-             * if (rat.y > HEIGHT - 150 - rat.height || rat.y < -50) {
-             * 
-             * gameOver = true;
-             * 
-             * }
-             */ if (rat.y + yMotion >= HEIGHT - 150) {
-
-                rat.y = HEIGHT - 150 - rat.height;
-
-            }
-            if (rat.x <= 0) {
-                rat.x = 0;
-            }
-            if (rat.x >= 1905 - rat.width) {
-                rat.x = 1905 - rat.width;
-            }
-        }
 
         renderer.repaint();
     }
@@ -265,29 +310,46 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
         g.setColor(epiGroundColor);
         g.fillRect(0, HEIGHT - 150, WIDTH, 30);
 
-        g.setColor(ratColor);
-        g.fillRect(rat.x, rat.y, rat.width, rat.height);
+        g.setColor(playerColor);
+        g.fillRect(player.x, player.y, player.width, player.height);
 
         for (Rectangle column : columns) {
 
             paintColumn(g, column);
         }
 
+        for (Rectangle door : doors) {
+
+            paintDoor(g, door);
+        }
+
         g.setColor(Color.white);
         g.setFont(new Font("Arial", 1, 50));
 
         if (!started) {
-            g.drawString("Click To Start", WIDTH / 3, HEIGHT / 2 - 50);
+            g.drawString("WASD & SPACE", WIDTH / 2 + 75, HEIGHT / 2);
         }
         if (gameOver) {
-            g.drawString("Hi Tanay", WIDTH / 3, HEIGHT / 2 - 50);
+            g.drawString("You Died", WIDTH / 2 - 100, HEIGHT / 2);
         }
-         if (!gameOver && started) {
-        g.drawString( "X: " + String.valueOf(rat.x) + " Y: " + (rat.y) , WIDTH / 2 - 10, 100);
+        if (!gameOver && started) {
+            g.drawString("X: " + String.valueOf(player.x) + " Y: " + (player.y) + " Jumps: " + (jumps), WIDTH / 2 - 10, 100);
         }
-        if (gameOver == true) {
-        g.drawString( "X: " + String.valueOf(rat.x) + " Y: " + (rat.y) , WIDTH / 2 - 10, 100);
-         }
+
+        for (Rectangle door : doors) {
+
+            if (door.intersects(player)) {
+
+                g.drawString("W TO ENTER", door.x - 140, door.y - 100);
+
+                if (player.y < 400) {
+
+                    level = 1;
+
+                }
+
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -310,11 +372,9 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
 
             if (jumps <= 1) {
 
-            jump();
+                jump();
 
             }
-            
-
         }
 
         if (e.getKeyCode() == KeyEvent.VK_D) {
@@ -329,12 +389,28 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
 
         }
 
+        if (e.getKeyCode() == KeyEvent.VK_W) {
+
+            for (Rectangle door : doors) {
+
+                if (door.intersects(player)) {
+
+                    enterDoor();
+
+                }
+            }
+        }
+
         if (e.getKeyCode() == KeyEvent.VK_S) {
 
             if (speed != 0) {
+
                 speed = 0;
+
             } else {
+
                 speed = 5;
+
             }
         }
 
@@ -353,9 +429,13 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 
             if (speed != 0) {
+
                 speed = 0;
+
             } else {
+
                 speed = 5;
+
             }
         }
     }
@@ -366,31 +446,30 @@ public class FlappyBird implements ActionListener, MouseListener, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_A) {
 
             while (xMotion < 0) {
-            xMotion++;
+                xMotion++;
             }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_D) {
 
             while (xMotion > 0) {
-            xMotion--;
+                xMotion--;
             }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 
             while (xMotion < 0) {
-            xMotion++;
+                xMotion++;
             }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 
             while (xMotion > 0) {
-            xMotion--;
+                xMotion--;
             }
         }
-
     }
 
     @Override
