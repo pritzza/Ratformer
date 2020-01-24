@@ -1,0 +1,22 @@
+Collision scaled with player's center coords
+
+Game screen layout determined by coords:
+
+start out at (0,0) or spawning screen, move one room right and generate (1,0), etc.
+
+create system to generate new rooms
+
+create classes for diffrent rooms layouts
+
+create system to update and check what room you're in
+
+
+window rescalablility maintains aspect ratio (16:9)
+
+scale graphics and everything else (im thinking you would travel the same ammount of pixels in fullscreen than you
+would in smaller resolutions, resulting in you moving, jumping, and falling disproportunatly faster in the game with 
+smaller window sizes) with size of window.
+
+graphics
+
+sound: music, FX
