@@ -22,42 +22,42 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
     public static Game game;
 
-    public final int WIDTH = 1920, HEIGHT = 1080;
+    public final int WIDTH = 1280, HEIGHT = 720;
 
     public Renderer renderer;
 
-    public ArrayList<Rectangle> columns, doors;
+    public ArrayList<Rectangle> columns, tires, topFloors, bottomFloors, spikes, upgrades, person;
 
     public Rectangle player;
 
-    public double  yMotion, xMotion;
+    public double yMotion, xMotion;
 
-    public int ticks, jumps, areaX, areaY = 0;
+    public int ticks, areaX, areaY = 0;
 
-   int playerCenterX ;
-   int playerCenterY ;
+    public int jumps, maxJumps = 1;
+
+    int playerCenterX;
+    int playerCenterY;
 
     public Random rng;
 
-    public boolean gameOver, started;
+    public boolean dead, started;
+
+    public boolean ownFourZeroUpgrade = false;
 
     GraphicsDevice gDevice;
 
     int currentScreenWidth, currentScreenHeight;
 
-    /*
-     * Color playerColor = new Color(112, 104, 92); Color backGroundColor = new
-     * Color(94, 92, 89); Color epiGroundColor = new Color(44, 39, 33); Color
-     * groundColor = new Color(60, 53, 44); Color hypoGroundColor = new Color(32,
-     * 32, 32);
-     */
-
     Color playerColor = new Color(128, 128, 128);
     Color backGroundColor = new Color(88, 88, 88);
-    Color epiGroundColor = new Color(22, 22, 22);
-    Color groundColor = new Color(32, 32, 32);
-    Color hypoGroundColor = new Color(16, 16, 16);
-    Color doorColor = new Color(255, 250, 250);
+    Color topFloorColor = new Color(22, 22, 22);
+    Color bottomFloorColor = new Color(32, 32, 32);
+    Color columnColor = new Color(16, 16, 16);
+    Color tireColor = new Color(0, 255, 255, 127);
+    Color spikeColor = new Color(255, 0, 0);
+    Color upgradeColor = new Color(0, 255, 0);
+    Color personColor = new Color(216, 216, 216, 240);
 
     public Game() {
 
@@ -78,11 +78,16 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         f.setResizable(true);
         f.setVisible(true);
 
-        player = new Rectangle(WIDTH / 2, 895, 20, 35);
+        player = new Rectangle(WIDTH / 2, HEIGHT * 795 / 1080, WIDTH * 30 / 1920, HEIGHT * 55 / 1080);
         columns = new ArrayList<Rectangle>();
-        // doors = new ArrayList<Rectangle>();
+        tires = new ArrayList<Rectangle>();
+        topFloors = new ArrayList<Rectangle>();
+        bottomFloors = new ArrayList<Rectangle>();
+        spikes = new ArrayList<Rectangle>();
+        upgrades = new ArrayList<Rectangle>();
+        person = new ArrayList<Rectangle>();
 
-        createSpawn();
+        createZeroZero();
 
         timer.start();
 
@@ -90,21 +95,54 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
     public void paintColumn(Graphics g, Rectangle column) {
 
-        g.setColor(hypoGroundColor);
+        g.setColor(columnColor);
         g.fillRect(column.x, column.y, column.width, column.height);
 
     }
 
-    /*
-     * public void paintDoor(Graphics g, Rectangle door) {
-     * 
-     * g.setColor(doorColor); g.fillRect(door.x, door.y, door.width, door.height);
-     * 
-     * }
-     */
-    public void jump() {
+    public void paintTire(Graphics g, Rectangle tire) {
 
-        jumps++;
+        g.setColor(tireColor);
+        g.fillRect(tire.x, tire.y, tire.width, tire.height);
+
+    }
+
+    public void paintTopFloor(Graphics g, Rectangle topFloor) {
+
+        g.setColor(topFloorColor);
+        g.fillRect(topFloor.x, topFloor.y, topFloor.width, topFloor.height);
+
+    }
+
+    public void paintBottomFloor(Graphics g, Rectangle bottomFloor) {
+
+        g.setColor(bottomFloorColor);
+        g.fillRect(bottomFloor.x, bottomFloor.y, bottomFloor.width, bottomFloor.height);
+
+    }
+
+    public void paintSpike(Graphics g, Rectangle spike) {
+
+        g.setColor(spikeColor);
+        g.fillRect(spike.x, spike.y, spike.width, spike.height);
+
+    }
+
+    public void paintUpgrade(Graphics g, Rectangle upgrade) {
+
+        g.setColor(upgradeColor);
+        g.fillRect(upgrade.x, upgrade.y, upgrade.width, upgrade.height);
+
+    }
+
+    public void paintPerson(Graphics g, Rectangle person) {
+
+        g.setColor(personColor);
+        g.fillRect(person.x, person.y, person.width, person.height);
+
+    }
+
+    public void jump() {
 
         if (!started) {
 
@@ -112,8 +150,14 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         }
 
-        yMotion = -7;
+        if (jumps > 0) {
 
+            jumps--;
+            yMotion = -7;
+
+        } else if (true) {
+
+        }
     }
 
     public void runLeft() {
@@ -121,6 +165,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         while (xMotion > -5) {
 
             xMotion -= 1;
+
         }
     }
 
@@ -129,50 +174,170 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         while (xMotion < 5) {
 
             xMotion += 1;
+
         }
     }
 
-    /*
-     * public void enterDoor() {
-     * 
-     * columns.clear(); doors.clear();
-     * 
-     * player.y = 895; player.x = WIDTH / 2 - (player.width / 2);
-     * 
-     * if (level == 1) {
-     * 
-     * createLevelOne();
-     * 
-     * level = 0;
-     * 
-     * } else {
-     * 
-     * createSpawn();
-     * 
-     * }
-     * 
-     * renderer.repaint();
-     * 
-     * }
-     */
-    public void createSpawn() {
+    public void createScreens() {
 
-        columns.add(new Rectangle(1100, 400, 320, 320));
-        columns.add(new Rectangle(400, 250, 150, 150));
-        columns.add(new Rectangle(1600, 790, 128, 32));
-        columns.add(new Rectangle(1636, 520, 32, 128));
+        columns.clear();
+        tires.clear();
+        topFloors.clear();
+        bottomFloors.clear();
+        spikes.clear();
+        upgrades.clear();
+        person.clear();
 
-        // doors.add(new Rectangle(450, 175, 50, 75));
-        // doors.add(new Rectangle(640, 855, 50, 75));
+        if (areaX == 0 && areaY == 0) {
+
+            createZeroZero();
+
+        } else if (areaX == 1 && areaY == 0) {
+
+            createOneZero();
+
+        } else if (areaX == 2 && areaY == 0) {
+
+            createTwoZero();
+
+        } else if (areaX == 3 && areaY == 0) {
+
+            createThreeZero();
+
+        } else if (areaX == 4 && areaY == 0) {
+
+            createFourZero();
+
+        } else if (areaX == -1 && areaY == 0) {
+
+            createNegativeOneZero();
+
+        } else if (areaX == -2 && areaY == 0) {
+
+            createNegativeTwoZero();
+
+        } else if (areaX == 2 && areaY == 1) {
+
+            createTwoOne();
+
+        } else {
+
+            createVoid();
+
+        }
+    }
+
+    public void createZeroZero() {
+
+        person.add(new Rectangle(WIDTH * 1536 / 1920, HEIGHT * 795 / 1080, WIDTH * 30 / 1920, HEIGHT * 55 / 1080));
+
+        createFloor1();
 
     }
 
-    public void createLevelOne() {
+    public void createNegativeOneZero() {
 
-        columns.add(new Rectangle(900, 350, 150, 150));
-        columns.add(new Rectangle(300, 650, 100, 100));
+        columns.add(new Rectangle(WIDTH * 1350 / 1920, HEIGHT * 600 / 1080, WIDTH * 100 / 1920, HEIGHT * 100 / 1080));
+        columns.add(new Rectangle(WIDTH * 280 / 1920, HEIGHT * 400 / 1080, WIDTH * 300 / 1920, HEIGHT * 200 / 1080));
+        columns.add(new Rectangle(WIDTH * 900 / 1920, HEIGHT * 150 / 1080, WIDTH * 200 / 1920, HEIGHT * 100 / 1080));
 
-        // doors.add(new Rectangle((WIDTH / 2 - (player.width / 2)), 855, 50, 75));
+        createFloor1();
+
+    }
+
+    public void createNegativeTwoZero() {
+
+        createFloor3();
+
+    }
+
+    public void createOneZero() {
+
+        columns.add(new Rectangle(WIDTH * 900 / 1920, HEIGHT * 700 / 1080, WIDTH * 100 / 1920, HEIGHT * 350 / 1080));
+
+        createFloor2();
+
+    }
+
+    public void createTwoZero() {
+
+        columns.add(new Rectangle(WIDTH * 1300 / 1920, HEIGHT * 300 / 1080, WIDTH * 150 / 1920, HEIGHT * 700 / 1080));
+
+        tires.add(new Rectangle(WIDTH * 750 / 1920, HEIGHT * 625 / 1080, WIDTH * 69 / 1920, HEIGHT * 69 / 1080));
+
+        tires.add(new Rectangle(WIDTH * 1025 / 1920, HEIGHT * 425 / 1080, WIDTH * 69 / 1920, HEIGHT * 69 / 1080));
+
+        createFloor1();
+
+    }
+
+    public void createThreeZero() {
+
+        spikes.add(new Rectangle(WIDTH * 1200 / 1920, HEIGHT * 750 / 1080, WIDTH * 200 / 1920, HEIGHT * 25 / 1080));
+
+        columns.add(new Rectangle(WIDTH * 1150 / 1920, HEIGHT * 775 / 1080, WIDTH * 300 / 1920, HEIGHT * 300 / 1080));
+
+        columns.add(new Rectangle(WIDTH * 500 / 1920, HEIGHT * 700 / 1080, WIDTH * 150 / 1920, HEIGHT * 300 / 1080));
+
+        tires.add(new Rectangle(WIDTH * 225 / 1920, HEIGHT * 375 / 1080, WIDTH * 69 / 1920, HEIGHT * 69 / 1080));
+
+        createFloor1();
+
+    }
+
+    public void createFourZero() {
+
+        if (ownFourZeroUpgrade == false) {
+
+            upgrades.add(new Rectangle(WIDTH * 935 / 1920, HEIGHT * 600 / 1080, WIDTH * 50 / 1920, HEIGHT * 50 / 1080));
+
+        }
+
+        createFloor1();
+
+    }
+
+    public void createTwoOne() {
+
+        columns.add(new Rectangle(WIDTH * 150 / 1920, HEIGHT * 800 / 1080, WIDTH * 1100 / 1920, HEIGHT * 75 / 1080));
+
+        tires.add(new Rectangle(WIDTH * 1500 / 1920, HEIGHT * 900 / 1080, WIDTH * 75 / 1920, HEIGHT * 75 / 1080));
+    }
+
+    public void createVoid() {
+
+    }
+
+    // Full floor
+    public void createFloor1() {
+
+        topFloors.add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 850 / 1080, WIDTH * 1920 / 1920, HEIGHT * 50 / 1080));
+        bottomFloors
+                .add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 850 / 1080, WIDTH * 1920 / 1920, HEIGHT * 180 / 1080));
+
+    }
+
+    // middle gap
+    public void createFloor2() {
+
+        topFloors.add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 850 / 1080, WIDTH * 640 / 1920, HEIGHT * 50 / 1080));
+        bottomFloors.add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 850 / 1080, WIDTH * 640 / 1920, HEIGHT * 180 / 1080));
+
+        topFloors.add(new Rectangle(WIDTH * 1280 / 1920, HEIGHT * 850 / 1080, WIDTH * 640 / 1920, HEIGHT * 50 / 1080));
+        bottomFloors
+                .add(new Rectangle(WIDTH * 1280 / 1920, HEIGHT * 850 / 1080, WIDTH * 640 / 1920, HEIGHT * 180 / 1080));
+
+    }
+
+    // right gap
+    public void createFloor3() {
+
+        topFloors.add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 850 / 1080, WIDTH * 940 / 1920, HEIGHT * 50 / 1080));
+        bottomFloors.add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 850 / 1080, WIDTH * 940 / 1920, HEIGHT * 180 / 1080));
+
+        topFloors.add(new Rectangle(WIDTH * 1780 / 1920, HEIGHT * 850 / 1080, WIDTH * 140 / 1920, HEIGHT * 50 / 1080));
+        bottomFloors
+                .add(new Rectangle(WIDTH * 1780 / 1920, HEIGHT * 850 / 1080, WIDTH * 140 / 1920, HEIGHT * 180 / 1080));
 
     }
 
@@ -182,6 +347,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         ticks++;
 
         playerCenterX = player.x + (player.width / 2);
+        playerCenterY = player.y + (player.height / 2);
 
         if (started) {
 
@@ -191,51 +357,69 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
             }
 
-            for (int i = 0; i < columns.size(); i++) {
+            if (dead == false) {
 
-                Rectangle column = columns.get(i);
+                // master physics d
+                player.y += yMotion;
+                player.x += xMotion;
 
-                if (column.x + column.width < 0) {
-
-                    columns.remove(column);
-
-                }
             }
-
-            // master physics
-            player.y += yMotion;
-            player.x += xMotion;
-
         }
 
         collision();
 
         renderer.repaint();
+
+    }
+
+    public void die() {
+
+        dead = true;
+
+    }
+
+    public void respawn() {
+
+        dead = false;
+        player.x = HEIGHT - (HEIGHT / 4);
+        player.y = HEIGHT / 2;
+
+        areaX = 0;
+        areaY = 0;
+        createScreens();
+
     }
 
     public void collision() {
 
-        // hit top of jframe
-        if (player.y < 0) {
+        for (Rectangle spike : spikes) {
 
-            player.y = 0;
-            yMotion = 0;
-        }
+            if (spike.intersects(player)) {
 
-        // floor collision
-        if (player.y > 895) {
-
-            player.y = 895;
-            jumps = 0;
-
-        } else {
-
-            // lose one jump when walking of cliff
-            if (jumps == 0) {
-
-                jumps = 1;
+                die();
 
             }
+        }
+
+        for (Rectangle upgrade : upgrades) {
+
+            if (upgrade.intersects(player)) {
+
+                if (ownFourZeroUpgrade == false) {
+
+                    ownFourZeroUpgrade = true;
+                    maxJumps++;
+                    upgradeColor = new Color(0, 255, 0, 0);
+
+                }
+            }
+        }
+
+        // lose one jump when walking of cliff
+        if (jumps == maxJumps) {
+
+            jumps = maxJumps - 1;
+
         }
 
         // prevent infinite acceleplayerion right
@@ -252,29 +436,80 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         }
 
-        // i dont know what this does, something with collision and sinking into the
-        // floor
-        if (player.y + yMotion >= HEIGHT - 150) {
-
-            player.y = HEIGHT - 150 - player.height;
-
-        }
-
         // dont walk off screen left
         if (playerCenterX <= 0) {
 
-            player.x = 1905 - player.width;
+            player.x = WIDTH - player.width;
             areaX--;
+
+            createScreens();
 
         }
 
         // dont walk off screen right
-        if (playerCenterX >= 1905) {
+        if (playerCenterX >= WIDTH) {
 
             player.x = 0;
             areaX++;
 
+            createScreens();
 
+        }
+
+        if (playerCenterY <= 0) {
+
+            player.y = HEIGHT - player.height;
+            areaY++;
+
+            createScreens();
+
+        }
+
+        if (player.y >= HEIGHT) {
+
+            if (areaY >= 1) {
+
+                player.y = 0;
+                areaY--;
+
+                createScreens();
+
+            } else {
+
+                if (dead == false) {
+
+                    die();
+
+                }
+            }
+        }
+
+        for (Rectangle bottomFloor : bottomFloors) {
+
+            if (bottomFloor.intersects(player)) {
+
+                // if you stand on floor
+                if (playerCenterY < bottomFloor.y && player.y < bottomFloor.y) {
+
+                    player.y = bottomFloor.y - player.height;
+
+                    jumps = maxJumps;
+
+                } else {
+
+                    // hit left of bottomFloor
+                    if (playerCenterX < bottomFloor.x) {
+
+                        player.x = bottomFloor.x - player.width;
+
+                        // hit right of bottomFloor
+                    } else if (playerCenterX > bottomFloor.x + bottomFloor.width) {
+
+                        player.x = bottomFloor.x + bottomFloor.width;
+
+                    }
+                }
+            }
         }
 
         // rectangle collision
@@ -283,16 +518,16 @@ public class Game implements ActionListener, MouseListener, KeyListener {
             if (column.intersects(player)) {
 
                 // if you hit the floor of column
-                if (player.y + player.height > column.y && player.y < column.y) {
+                if (playerCenterY < column.y && player.y < column.y) {
 
                     player.y = column.y - player.height;
 
-                    jumps = 0;
+                    jumps = maxJumps;
 
                 }
 
                 // if you hit ceiling of column
-                else if (player.y < column.y + column.height && player.y + player.height > column.y + column.height) {
+                else if (playerCenterY > column.y + column.height) {
 
                     player.y = column.y + column.height;
 
@@ -301,19 +536,28 @@ public class Game implements ActionListener, MouseListener, KeyListener {
                 } else {
 
                     // hit left of column
-                    if (player.x - player.width <= column.x) {
+                    if (playerCenterX < column.x) {
 
                         player.x = column.x - player.width;
 
                         // hit right of column
-                    } else if (player.x <= column.x + column.width) {
+                    } else if (playerCenterX > column.x + column.width) {
 
                         player.x = column.x + column.width;
 
                     }
                 }
             }
-        }
+
+            for (Rectangle tire : tires) {
+
+                if (tire.intersects(player)) {
+
+                    jumps = 1;
+
+                }
+            }
+        } 
     }
 
     public void repaint(Graphics g) {
@@ -321,54 +565,75 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         g.setColor(backGroundColor);
         g.fillRect(0, 0, WIDTH, HEIGHT);
 
-        g.setColor(groundColor);
-        g.fillRect(0, HEIGHT - 150, WIDTH, 150);
-
-        g.setColor(epiGroundColor);
-        g.fillRect(0, HEIGHT - 150, WIDTH, 30);
-
         g.setColor(playerColor);
         g.fillRect(player.x, player.y, player.width, player.height);
 
         for (Rectangle column : columns) {
 
             paintColumn(g, column);
+
         }
 
-        /*
-         * for (Rectangle door : doors) {
-         * 
-         * paintDoor(g, door); }
-         */
+        for (Rectangle tire : tires) {
+
+            paintTire(g, tire);
+
+        }
+
+        for (Rectangle bottomFloor : bottomFloors) {
+
+            paintBottomFloor(g, bottomFloor);
+
+        }
+
+        for (Rectangle topFloor : topFloors) {
+
+            paintTopFloor(g, topFloor);
+
+        }
+
+        for (Rectangle spike : spikes) {
+
+            paintSpike(g, spike);
+
+        }
+
+        for (Rectangle upgrade : upgrades) {
+
+            paintUpgrade(g, upgrade);
+
+        }
+
+        for (Rectangle person : person) {
+
+            paintPerson(g, person);
+
+        }
+
         g.setColor(Color.white);
         g.setFont(new Font("Arial", 1, 32));
 
         if (!started) {
-            g.drawString("WASD & SPACE", (WIDTH / 2) + 172, (HEIGHT / 2) + 16);
+            g.drawString("WASD & SPACE", (WIDTH * 3) / 7, (HEIGHT / 2) + 16);
         }
-        if (gameOver) {
-            g.drawString("You Died", WIDTH / 2 - 100, HEIGHT / 2);
+        if (dead) {
+            g.drawString("You Died", (WIDTH * 2) / 5, HEIGHT / 2);
         }
-        if (!gameOver && started) {
-            g.drawString("X: " + String.valueOf(player.x) + " Y: " + (player.y) + " Jumps: " + (jumps) + " centerX: " + (playerCenterX), WIDTH / 2, 100);
+      /*  if (true) {
+            g.drawString("Player (" + String.valueOf(playerCenterX) + ", " + (playerCenterY) + ") Area: (" + (areaX)
+                    + ", " + (areaY) + ") " + jumps + " / " + maxJumps, (WIDTH / 2) - 169, 100);
+        }
+*/
+        for (Rectangle person : person) {
+
+            if (person.intersects(player)) {
+
+                g.drawString("Hello.", person.x - (WIDTH * 45 / 1920), person.y - (HEIGHT * 75 / 1080));
+            
+            }
         }
     }
 
-    /*
-     * for (Rectangle door : doors) {
-     * 
-     * if (door.intersects(player)) {
-     * 
-     * g.drawString("W TO ENTER", door.x - 75, door.y - 100);
-     * 
-     * if (player.y < 400) {
-     * 
-     * level = 1;
-     * 
-     * }
-     * 
-     * } } }
-     */
     public static void main(String[] args) {
 
         game = new Game();
@@ -378,8 +643,15 @@ public class Game implements ActionListener, MouseListener, KeyListener {
     @Override
     public void mouseClicked(MouseEvent e) {
 
-        jump();
+        if (dead == true) {
 
+            respawn();
+
+        } else {
+
+            jump();
+
+        }
     }
 
     @Override
@@ -387,7 +659,11 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 
-            if (jumps <= 1) {
+            if (dead == true) {
+
+                respawn();
+
+            } else {
 
                 jump();
 
@@ -408,15 +684,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         if (e.getKeyCode() == KeyEvent.VK_W) {
 
-            /*
-             * for (Rectangle door : doors) {
-             * 
-             * if (door.intersects(player)) {
-             * 
-             * enterDoor();
-             * 
-             * } }
-             */ }
+        }
 
         if (e.getKeyCode() == KeyEvent.VK_S) {
 
@@ -445,28 +713,36 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_A) {
 
             while (xMotion < 0) {
+
                 xMotion++;
+
             }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_D) {
 
             while (xMotion > 0) {
+
                 xMotion--;
+
             }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 
             while (xMotion < 0) {
+
                 xMotion++;
+
             }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 
             while (xMotion > 0) {
+
                 xMotion--;
+
             }
         }
     }
