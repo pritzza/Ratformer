@@ -1,9 +1,7 @@
 
-
+Todo:
 
 checkpoints
-
-spikes
 
 window rescalablility maintains aspect ratio (16:9)
 
@@ -29,3 +27,9 @@ create system to generate new rooms
 create classes for diffrent rooms layouts
 
 create system to update and check what room you're in
+
+floor collision
+
+fix bug where cant respawn when killed under floor
+
+spikes
