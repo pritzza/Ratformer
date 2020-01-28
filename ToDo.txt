@@ -33,3 +33,5 @@ floor collision
 fix bug where cant respawn when killed under floor
 
 spikes
+
+got collision working perfectly! thank you Will!
