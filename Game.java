@@ -9,9 +9,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-//import java.awt.GraphicsEnvironment;
-//import java.awt.GraphicsDevice;
-
 import javax.swing.Timer;
 import javax.swing.JFrame;
 
@@ -30,7 +27,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
     public Rectangle player;
 
-    public double yMotion, xMotion;
+    public double yMotion, xMotion, playerCenterX, playerCenterY;
 
     public int ticks;
 
@@ -39,18 +36,9 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
     public int jumps, maxJumps = 1;
 
-    int playerCenterX;
-    int playerCenterY;
-
     public Random rng;
 
-    public boolean dead, started;
-
-    public boolean ownFourZeroUpgrade = false;
-
-    //GraphicsDevice gDevice;
-
-    int currentScreenWidth, currentScreenHeight;
+    public boolean dead, started, ownFourZeroUpgrade = false;;
 
     Color playerColor = new Color(128, 128, 128);
     Color backGroundColor = new Color(88, 88, 88);
@@ -63,9 +51,6 @@ public class Game implements ActionListener, MouseListener, KeyListener {
     Color personColor = new Color(216, 216, 216, 240);
 
     public Game() {
-
-        //GraphicsEnvironment gEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        //gDevice = gEnvironment.getDefaultScreenDevice();
 
         JFrame f = new JFrame();
         Timer timer = new Timer(10, this);
@@ -211,6 +196,10 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
             createFourZero();
 
+        } else if (areaX == 5 && areaY == 0) {
+
+            createFiveZero();
+
         } else if (areaX == -1 && areaY == 0) {
 
             createNegativeOneZero();
@@ -223,9 +212,13 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
             createNegativeThreeZero();
 
-        } else if (areaX == -3 && areaY == 1) {
+        } else if (areaX == -4 && areaY == 0) {
 
-            createNegativeThreeOne();
+            createNegativeFourZero();
+
+        } else if (areaX == -4 && areaY == 1) {
+
+            createNegativeFourOne();
 
         } else if (areaX == 2 && areaY == 1) {
 
@@ -248,17 +241,22 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
     public void createNegativeOneZero() {
 
-        columns.add(new Rectangle(WIDTH * 1300 / 1920, HEIGHT * 550 / 1080, WIDTH * 200 / 1920, HEIGHT * 100 / 1080));
-        
-        columns.add(new Rectangle(WIDTH * 400 / 1920, HEIGHT * 400 / 1080, WIDTH * 200 / 1920, HEIGHT * 100 / 1080));
+        columns.add(new Rectangle(WIDTH * 800 / 1920, HEIGHT * 775 / 1080, WIDTH * 400 / 1920, HEIGHT * 100 / 1080));
+
+        columns.add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 350 / 1080, WIDTH * 550 / 1920, HEIGHT * 100 / 1080));
+        spikes.add(new Rectangle(WIDTH * 550 / 1920, HEIGHT * 350 / 1080, WIDTH * 50 / 1920, HEIGHT * 100 / 1080));
+
+        columns.add(new Rectangle(WIDTH * 1500 / 1920, HEIGHT * 450 / 1080, WIDTH * 300 / 1920, HEIGHT * 100 / 1080));
+        spikes.add(new Rectangle(WIDTH * 1475 / 1920, HEIGHT * 425 / 1080, WIDTH * 350 / 1920, HEIGHT * 150 / 1080));
+        tires.add(new Rectangle(WIDTH * 1425 / 1920, HEIGHT * 450 / 1080, WIDTH * 50 / 1920, HEIGHT * 100 / 1080));
 
         createFloor1();
 
     }
 
     public void createNegativeTwoZero() {
-        
-        columns.add(new Rectangle(WIDTH * 1225 / 1920, HEIGHT * 350 / 1080, WIDTH * 200 / 1920, HEIGHT * 100 / 1080));
+
+        columns.add(new Rectangle(WIDTH * 1250 / 1920, HEIGHT * 350 / 1080, WIDTH * 750 / 1920, HEIGHT * 100 / 1080));
 
         spikes.add(new Rectangle(WIDTH * 525 / 1920, HEIGHT * 0 / 1080, WIDTH * 150 / 1920, HEIGHT * 250 / 1080));
         columns.add(new Rectangle(WIDTH * 550 / 1920, HEIGHT * 0 / 1080, WIDTH * 100 / 1920, HEIGHT * 225 / 1080));
@@ -271,7 +269,29 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
     public void createNegativeThreeZero() {
 
-        //first spike
+        columns.add(new Rectangle(WIDTH * 1425 / 1920, HEIGHT * 500 / 1080, WIDTH * 200 / 1920, HEIGHT * 500 / 1080));
+
+        columns.add(new Rectangle(WIDTH * 525 / 1920, HEIGHT * 0 / 1080, WIDTH * 650 / 1920, HEIGHT * 475 / 1080));
+        spikes.add(new Rectangle(WIDTH * 525 / 1920, HEIGHT * 0 / 1080, WIDTH * 675 / 1920, HEIGHT * 500 / 1080));
+        columns.add(new Rectangle(WIDTH * 525 / 1920, HEIGHT * 0 / 1080, WIDTH * 50 / 1920, HEIGHT * 675 / 1080));
+        spikes.add(new Rectangle(WIDTH * 500 / 1920, HEIGHT * 0 / 1080, WIDTH * 100 / 1920, HEIGHT * 700 / 1080));
+
+        spikes.add(new Rectangle(WIDTH * 1100 / 1920, HEIGHT * 700 / 1080, WIDTH * 100 / 1920, HEIGHT * 350 / 1080));
+        columns.add(new Rectangle(WIDTH * 1125 / 1920, HEIGHT * 725 / 1080, WIDTH * 50 / 1920, HEIGHT * 350 / 1080));
+
+        columns.add(new Rectangle(WIDTH * 750 / 1920, HEIGHT * 700 / 1080, WIDTH * 200 / 1920, HEIGHT * 50 / 1080));
+
+        tires.add(new Rectangle(WIDTH * 500 / 1920, HEIGHT * 800 / 1080, WIDTH * 100 / 1920, HEIGHT * 100 / 1080));
+
+        columns.add(new Rectangle(WIDTH * 200 / 1920, HEIGHT * 600 / 1080, WIDTH * 100 / 1920, HEIGHT * 500 / 1080));
+
+        createFloor5();
+
+    }
+
+    public void createNegativeFourZero() {
+
+        // first spike
         spikes.add(new Rectangle(WIDTH * 1325 / 1920, HEIGHT * 500 / 1080, WIDTH * 100 / 1920, HEIGHT * 350 / 1080));
         columns.add(new Rectangle(WIDTH * 1350 / 1920, HEIGHT * 525 / 1080, WIDTH * 50 / 1920, HEIGHT * 350 / 1080));
         tires.add(new Rectangle(WIDTH * 1350 / 1920, HEIGHT * 400 / 1080, WIDTH * 50 / 1920, HEIGHT * 50 / 1080));
@@ -280,10 +300,10 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         spikes.add(new Rectangle(WIDTH * 925 / 1920, HEIGHT * 325 / 1080, WIDTH * 100 / 1920, HEIGHT * 275 / 1080));
         columns.add(new Rectangle(WIDTH * 950 / 1920, HEIGHT * 325 / 1080, WIDTH * 50 / 1920, HEIGHT * 250 / 1080));
 
-        //bottom spikes
+        // bottom spikes
         spikes.add(new Rectangle(WIDTH * 725 / 1920, HEIGHT * 825 / 1080, WIDTH * 600 / 1920, HEIGHT * 25 / 1080));
 
-        //top
+        // top
         spikes.add(new Rectangle(WIDTH * 600 / 1920, HEIGHT * 300 / 1080, WIDTH * 825 / 1920, HEIGHT * 50 / 1080));
         columns.add(new Rectangle(WIDTH * 600 / 1920, HEIGHT * 275 / 1080, WIDTH * 825 / 1920, HEIGHT * 50 / 1080));
         columns.add(new Rectangle(WIDTH * 600 / 1920, HEIGHT * 0 / 1080, WIDTH * 825 / 1920, HEIGHT * 275 / 1080));
@@ -301,15 +321,15 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
     }
 
-    public void createNegativeThreeOne() {
+    public void createNegativeFourOne() {
 
-        //floor platform
+        // floor platform
         columns.add(new Rectangle(WIDTH * 600 / 1920, HEIGHT * 800 / 1080, WIDTH * 825 / 1920, HEIGHT * 375 / 1080));
 
-        //left wall
+        // left wall
         columns.add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 0 / 1080, WIDTH * 250 / 1920, HEIGHT * 1100 / 1080));
         tires.add(new Rectangle(WIDTH * 250 / 1920, HEIGHT * 970 / 1080, WIDTH * 350 / 1920, HEIGHT * 69 / 1080));
-        
+
     }
 
     public void createOneZero() {
@@ -346,20 +366,37 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
     public void createFourZero() {
 
+        // right
+        columns.add(new Rectangle(WIDTH * 960 / 1920, HEIGHT * 350 / 1080, WIDTH * 200 / 1920, HEIGHT * 500 / 1080));
+        tires.add(new Rectangle(WIDTH * 910 / 1920, HEIGHT * 600 / 1080, WIDTH * 50 / 1920, HEIGHT * 100 / 1080));
+        columns.add(new Rectangle(WIDTH * 960 / 1920, HEIGHT * 350 / 1080, WIDTH * 300 / 1920, HEIGHT * 100 / 1080));
+        tires.add(new Rectangle(WIDTH * 1160 / 1920, HEIGHT * 450 / 1080, WIDTH * 100 / 1920, HEIGHT * 50 / 1080));
+
+        // top
+        columns.add(new Rectangle(WIDTH * 300 / 1920, HEIGHT * 0 / 1080, WIDTH * 300 / 1920, HEIGHT * 600 / 1080));
+        tires.add(new Rectangle(WIDTH * 600 / 1920, HEIGHT * 400 / 1080, WIDTH * 50 / 1920, HEIGHT * 100 / 1080));
+
+        createFloor4();
+
+    }
+
+    public void createFiveZero() {
+
         if (ownFourZeroUpgrade == false) {
 
-            upgrades.add(new Rectangle(WIDTH * 1225 / 1920, HEIGHT * 550 / 1080, WIDTH * 50 / 1920, HEIGHT * 50 / 1080));
+            upgrades.add(
+                    new Rectangle(WIDTH * 1225 / 1920, HEIGHT * 550 / 1080, WIDTH * 50 / 1920, HEIGHT * 50 / 1080));
 
-        }   
-        
-            columns.add(new Rectangle(WIDTH * 1100 / 1920, HEIGHT * 810 / 1080, WIDTH * 300 / 1920, HEIGHT * 100 / 1080));
-            columns.add(new Rectangle(WIDTH * 1150 / 1920, HEIGHT * 780 / 1080, WIDTH * 200 / 1920, HEIGHT * 100 / 1080));
+        }
 
-            columns.add(new Rectangle(WIDTH * 300 / 1920, HEIGHT * 700 / 1080, WIDTH * 150 / 1920, HEIGHT * 150 / 1080));
-            columns.add(new Rectangle(WIDTH * 600 / 1920, HEIGHT * 400 / 1080, WIDTH * 160 / 1920, HEIGHT * 450 / 1080));
-            columns.add(new Rectangle(WIDTH * 450 / 1920, HEIGHT * 550 / 1080, WIDTH * 150 / 1920, HEIGHT * 300 / 1080));
+        columns.add(new Rectangle(WIDTH * 1100 / 1920, HEIGHT * 810 / 1080, WIDTH * 300 / 1920, HEIGHT * 100 / 1080));
+        columns.add(new Rectangle(WIDTH * 1150 / 1920, HEIGHT * 780 / 1080, WIDTH * 200 / 1920, HEIGHT * 100 / 1080));
 
-            columns.add(new Rectangle(WIDTH * 1760 / 1920, HEIGHT * 0 / 1080, WIDTH * 150 / 1920, HEIGHT * 900 / 1080));
+        columns.add(new Rectangle(WIDTH * 300 / 1920, HEIGHT * 700 / 1080, WIDTH * 150 / 1920, HEIGHT * 150 / 1080));
+        columns.add(new Rectangle(WIDTH * 600 / 1920, HEIGHT * 400 / 1080, WIDTH * 160 / 1920, HEIGHT * 450 / 1080));
+        columns.add(new Rectangle(WIDTH * 450 / 1920, HEIGHT * 550 / 1080, WIDTH * 150 / 1920, HEIGHT * 300 / 1080));
+
+        columns.add(new Rectangle(WIDTH * 1760 / 1920, HEIGHT * 0 / 1080, WIDTH * 150 / 1920, HEIGHT * 900 / 1080));
 
         createFloor1();
 
@@ -406,6 +443,30 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         topFloors.add(new Rectangle(WIDTH * 1730 / 1920, HEIGHT * 850 / 1080, WIDTH * 190 / 1920, HEIGHT * 50 / 1080));
         bottomFloors
                 .add(new Rectangle(WIDTH * 1730 / 1920, HEIGHT * 850 / 1080, WIDTH * 190 / 1920, HEIGHT * 180 / 1080));
+
+    }
+
+    // left gap
+    public void createFloor4() {
+
+        topFloors.add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 850 / 1080, WIDTH * 600 / 1920, HEIGHT * 50 / 1080));
+        bottomFloors.add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 850 / 1080, WIDTH * 600 / 1920, HEIGHT * 180 / 1080));
+
+        topFloors.add(new Rectangle(WIDTH * 960 / 1920, HEIGHT * 850 / 1080, WIDTH * 980 / 1920, HEIGHT * 50 / 1080));
+        bottomFloors
+                .add(new Rectangle(WIDTH * 960 / 1920, HEIGHT * 850 / 1080, WIDTH * 980 / 1920, HEIGHT * 180 / 1080));
+
+    }
+
+    // little on the right
+    public void createFloor5() {
+
+        topFloors.add(new Rectangle(WIDTH * 1425 / 1920, HEIGHT * 850 / 1080, WIDTH * 490 / 1920, HEIGHT * 50 / 1080));
+        bottomFloors
+                .add(new Rectangle(WIDTH * 1425 / 1920, HEIGHT * 850 / 1080, WIDTH * 490 / 1920, HEIGHT * 180 / 1080));
+
+        topFloors.add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 850 / 1080, WIDTH * 200 / 1920, HEIGHT * 50 / 1080));
+        bottomFloors.add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 850 / 1080, WIDTH * 200 / 1920, HEIGHT * 180 / 1080));
 
     }
 
@@ -463,6 +524,8 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         for (Rectangle spike : spikes) {
 
             if (spike.intersects(player)) {
+
+                if (player.y < spike.y + spike.height || player.y + player.height > spike.y || player.x < spike.x + spike.width || player.x + player.width > spike.x)
 
                 die();
 
@@ -563,6 +626,8 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
                     jumps = maxJumps;
 
+                    yMotion = 2.5;
+
                 } else {
 
                     // hit left of bottomFloor
@@ -591,6 +656,8 @@ public class Game implements ActionListener, MouseListener, KeyListener {
                     player.y = column.y - player.height;
 
                     jumps = maxJumps;
+
+                    yMotion = 2.5;
 
                 }
 
@@ -625,7 +692,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
                 }
             }
-        } 
+        }
     }
 
     public void repaint(Graphics g) {
@@ -666,8 +733,6 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         }
 
-        
-
         for (Rectangle upgrade : upgrades) {
 
             paintUpgrade(g, upgrade);
@@ -689,17 +754,17 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         if (dead) {
             g.drawString("You Died", (WIDTH * 2) / 5, HEIGHT / 2);
         }
-      /*  if (true) {
-            g.drawString("Player (" + String.valueOf(playerCenterX) + ", " + (playerCenterY) + ") Area: (" + (areaX)
-                    + ", " + (areaY) + ") " + jumps + " / " + maxJumps, (WIDTH / 2) - 169, 100);
-        }
-*/
+        /*
+         * if (true) { g.drawString("Player (" + String.valueOf(playerCenterX) + ", " +
+         * (playerCenterY) + ") Area: (" + (areaX) + ", " + (areaY) + ") " + jumps +
+         * " / " + maxJumps, (WIDTH / 2) - 169, 100); }
+         */
         for (Rectangle person : person) {
 
             if (person.intersects(player)) {
 
                 g.drawString("Hello.", person.x - (WIDTH * 45 / 1920), person.y - (HEIGHT * 75 / 1080));
-            
+
             }
         }
     }
@@ -713,15 +778,6 @@ public class Game implements ActionListener, MouseListener, KeyListener {
     @Override
     public void mouseClicked(MouseEvent e) {
 
-        if (dead == true) {
-
-            respawn();
-
-        } else {
-
-            jump();
-
-        }
     }
 
     @Override
@@ -762,13 +818,9 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 
-            runRight();
-
         }
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-
-            runLeft();
 
         }
 
@@ -800,20 +852,10 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 
-            while (xMotion < 0) {
-
-                xMotion++;
-
-            }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 
-            while (xMotion > 0) {
-
-                xMotion--;
-
-            }
         }
     }
 
