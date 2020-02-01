@@ -83,6 +83,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
     }
 
+    // Defines color and what size of rectangles will be
     public void paintColumn(Graphics g, Rectangle column) {
 
         g.setColor(columnColor);
@@ -90,6 +91,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
     }
 
+    // Blue rectangles
     public void paintTire(Graphics g, Rectangle tire) {
 
         g.setColor(tireColor);
@@ -185,11 +187,12 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         upgrades.clear();
         person.clear();
         checkPoints.clear();
-            if (areaX != respawnX || areaY != respawnY) {
 
-                checkPointColor = new Color(255, 255, 0);
+        if (areaX != respawnX || areaY != respawnY) {
 
-            }
+            checkPointColor = new Color(255, 255, 0);
+
+        }
 
         if (areaX == 0 && areaY == 0) {
 
@@ -246,6 +249,18 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         }
     }
 
+    /*
+     * All of the objects in every screen There are 4 values separted by commas for
+     * every object, the values go the objects: (x, y, width, height) x represents
+     * how many pixels it is away from the left of the screen y represents how many
+     * pixels it is away from the top of the screen width is how many pixels long it
+     * is, from left to right height is how many pixels tall it is, from top to
+     * bottom
+     * 
+     * If you want to make a screen create an else if statement under the function
+     * createScreens. Be sure to have the condition statement include unqique
+     * coordinates, then call the function like I have here.
+     */
     public void createZeroZero() {
 
         person.add(new Rectangle(WIDTH * 1536 / 1920, HEIGHT * 795 / 1080, WIDTH * 30 / 1920, HEIGHT * 55 / 1080));
@@ -310,8 +325,8 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         spikes.add(new Rectangle(WIDTH * 1325 / 1920, HEIGHT * 500 / 1080, WIDTH * 100 / 1920, HEIGHT * 350 / 1080));
         columns.add(new Rectangle(WIDTH * 1350 / 1920, HEIGHT * 525 / 1080, WIDTH * 50 / 1920, HEIGHT * 350 / 1080));
         tires.add(new Rectangle(WIDTH * 1350 / 1920, HEIGHT * 400 / 1080, WIDTH * 50 / 1920, HEIGHT * 50 / 1080));
-        
-        //secret
+
+        // secret
         tires.add(new Rectangle(WIDTH * 1400 / 1920, HEIGHT * -50 / 1080, WIDTH * 50 / 1920, HEIGHT * 50 / 1080));
 
         // downward spike
@@ -348,8 +363,9 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         columns.add(new Rectangle(WIDTH * 0 / 1920, HEIGHT * 0 / 1080, WIDTH * 250 / 1920, HEIGHT * 1100 / 1080));
         tires.add(new Rectangle(WIDTH * 250 / 1920, HEIGHT * 970 / 1080, WIDTH * 350 / 1920, HEIGHT * 69 / 1080));
 
-        checkPoints.add(new Rectangle(WIDTH * 1000 / 1920, HEIGHT * 701 / 1080, WIDTH * 50 / 1920, HEIGHT * 100 / 1080));
-        
+        checkPoints
+                .add(new Rectangle(WIDTH * 1000 / 1920, HEIGHT * 701 / 1080, WIDTH * 50 / 1920, HEIGHT * 100 / 1080));
+
         spikes.add(new Rectangle(WIDTH * 1300 / 1920, HEIGHT * 475 / 1080, WIDTH * 50 / 1920, HEIGHT * 75 / 1080));
         columns.add(new Rectangle(WIDTH * 1349 / 1920, HEIGHT * 475 / 1080, WIDTH * 900 / 1920, HEIGHT * 75 / 1080));
 
@@ -498,42 +514,46 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         if (started) {
 
-        ticks++;
+            ticks++;
 
-        seconds++;
+            // calculates seconds, but only if the player hasn't touched any checkpoints, only here to stop the timer once you reach the end/first/only checkpoint
+            if (respawnX != 0) {
 
-        playerCenterX = player.x + (player.width / 2);
-        playerCenterY = player.y + (player.height / 2);
+            seconds = ticks - (minutes * 5340);
 
-        
-        
+            }
+
+            playerCenterX = player.x + (player.width / 2);
+            playerCenterY = player.y + (player.height / 2);
+
+            // every 60 seconds a minute passes
             if (seconds >= 60 * 89) {
 
-            minutes++;
-            seconds = 0;
-
-        }
-
-        if (started) {
-
-            if (ticks % 4 == 0 && yMotion < 7) {
-
-                yMotion += .8;
+                minutes++;
+                seconds = 0;
 
             }
 
-            if (dead == false) {
+            if (started) {
 
-                // master physics d
-                player.y += yMotion;
-                player.x += xMotion;
+                if (ticks % 4 == 0 && yMotion < 7) {
 
+                    yMotion += .8;
+
+                }
+
+                if (dead == false) {
+
+                    // master physics
+                    player.y += yMotion;
+                    player.x += xMotion;
+
+                }
             }
-        }
 
-        collision();
+            collision();
 
-        renderer.repaint();
+            renderer.repaint();
 
         }
     }
@@ -561,11 +581,12 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         for (Rectangle spike : spikes) {
 
+            // if the player sprite touches spike
             if (spike.intersects(player)) {
 
                 if (dead == false) {
 
-                die();
+                    die();
 
                 }
             }
@@ -597,7 +618,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
             }
         }
 
-        // lose one jump when walking of cliff
+        // lose one jump when walking of platform
         if (jumps == maxJumps) {
 
             jumps = maxJumps - 1;
@@ -618,7 +639,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         }
 
-        // dont walk off screen left
+        // moves player one screen left
         if (playerCenterX <= 0) {
 
             player.x = WIDTH - player.width;
@@ -628,7 +649,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         }
 
-        // dont walk off screen right
+        // moves player one screen right
         if (playerCenterX >= WIDTH) {
 
             player.x = 0;
@@ -638,6 +659,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         }
 
+        // moves character up one screen
         if (playerCenterY <= 0) {
 
             player.y = HEIGHT - player.height;
@@ -647,6 +669,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
         }
 
+        // moves player screen down unless at bottom floor
         if (player.y >= HEIGHT) {
 
             if (areaY >= 1) {
@@ -666,6 +689,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
             }
         }
 
+        // Floor collision
         for (Rectangle bottomFloor : bottomFloors) {
 
             if (bottomFloor.intersects(player)) {
@@ -696,7 +720,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
             }
         }
 
-        // rectangle collision
+        // column collision
         for (Rectangle column : columns) {
 
             if (column.intersects(player)) {
@@ -735,6 +759,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
                 }
             }
 
+            // Blue square mechanic
             for (Rectangle tire : tires) {
 
                 if (tire.intersects(player)) {
@@ -746,6 +771,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
         }
     }
 
+    // Draws sprites
     public void repaint(Graphics g) {
 
         g.setColor(backGroundColor);
@@ -812,8 +838,9 @@ public class Game implements ActionListener, MouseListener, KeyListener {
             g.drawString("You Died", (WIDTH * 2) / 5, HEIGHT / 2);
         }
         if (statsOpen) {
-            g.drawString("Deaths: " + String.valueOf(deaths) + " Time: " + (minutes) + ":" + (seconds / 89) + ";" + (ticks)
-            , (WIDTH / 2) - 169, 100);
+            g.drawString(
+                    "Deaths: " + String.valueOf(deaths) + " Time: " + (minutes) + ":" + (seconds / 89) + ";" + (ticks),
+                    (WIDTH / 2) - 169, 100);
         }
         /*
          * if (true) { g.drawString("Player (" + String.valueOf(playerCenterX) + ", " +
@@ -826,12 +853,13 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
                 if (ownFourZeroUpgrade == false) {
 
-                g.drawString("Hello.", person.x - (WIDTH * 45 / 1920), person.y - (HEIGHT * 75 / 1080));
+                    g.drawString("Hello.", person.x - (WIDTH * 45 / 1920), person.y - (HEIGHT * 75 / 1080));
 
                 } else if (ownFourZeroUpgrade == true) {
 
-                    g.drawString("There\'s nothing in your eyes.", person.x - (WIDTH * 384 / 1920), person.y - (HEIGHT * 75 / 1080));
-    
+                    g.drawString("There\'s nothing in your eyes.", person.x - (WIDTH * 384 / 1920),
+                            person.y - (HEIGHT * 75 / 1080));
+
                 }
             }
         }
@@ -848,6 +876,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
     }
 
+    // Keyboard imputs
     @Override
     public void keyPressed(KeyEvent e) {
 
@@ -884,11 +913,11 @@ public class Game implements ActionListener, MouseListener, KeyListener {
 
             if (statsOpen == false) {
 
-            statsOpen = true;
+                statsOpen = true;
 
             } else if (statsOpen == true) {
 
-            statsOpen = false;
+                statsOpen = false;
 
             }
         }
