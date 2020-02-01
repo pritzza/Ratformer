@@ -517,7 +517,7 @@ public class Game implements ActionListener, MouseListener, KeyListener {
             ticks++;
 
             // calculates seconds, but only if the player hasn't touched any checkpoints, only here to stop the timer once you reach the end/first/only checkpoint
-            if (respawnX != 0) {
+            if (respawnX != -4) {
 
             seconds = ticks - (minutes * 5340);
 
