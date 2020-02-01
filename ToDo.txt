@@ -1,8 +1,6 @@
 
 Todo:
 
-checkpoints
-
 window rescalablility maintains aspect ratio (16:9)
 
 scale graphics and everything else (im thinking you would travel the same ammount of pixels in fullscreen than you
@@ -35,3 +33,5 @@ fix bug where cant respawn when killed under floor
 spikes
 
 got collision working perfectly! thank you Will!
+
+checkpoints
